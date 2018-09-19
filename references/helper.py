@@ -279,8 +279,9 @@ class Stocker():
       
         plt.show();
         
-        def reset_plot():
-        
+    
+    @staticmethod  
+    def reset_plot():
         # Restore default parameters
         matplotlib.rcParams.update(matplotlib.rcParamsDefault)
         
@@ -297,71 +298,33 @@ class Stocker():
         # Change the index and resample at daily level
         dataframe = dataframe.set_index('ds')
         dataframe = dataframe.resample('D')
-        
+    
         # Reset the index and interpolate nan values
         dataframe = dataframe.reset_index(level=0)
         dataframe = dataframe.interpolate()
         return dataframe
     
-    # Remove weekends from a dataframe
+        # Remove weekends from a dataframe
     def remove_weekends(self, dataframe):
-        
+            
         # Reset index to use ix
         dataframe = dataframe.reset_index(drop=True)
-        
+            
         weekends = []
         
         # Find all of the weekends
         for i, date in enumerate(dataframe['ds']):
             if (date.weekday()) == 5 | (date.weekday() == 6):
                 weekends.append(i)
-            
-        # Drop the weekends
-        dataframe = dataframe.drop(weekends, axis=0)
-        
-        return dataframe
-    
-    
-    # Calculate and plot profit from buying and holding shares for specified date range
-    def buy_and_hold(self, start_date=None, end_date=None, nshares=1):
-        self.reset_plot()
-        
-        start_date, end_date = self.handle_dates(start_date, end_date)
-            
-        # Find starting and ending price of stock
-        start_price = float(self.stock[self.stock['Date'] == start_date]['Adj. Open'])
-        end_price = float(self.stock[self.stock['Date'] == end_date]['Adj. Close'])
-        
-        # Make a profit dataframe and calculate profit column
-        profits = self.make_df(start_date, end_date)
-        profits['hold_profit'] = nshares * (profits['Adj. Close'] - start_price)
-        
-        # Total profit
-        total_hold_profit = nshares * (end_price - start_price)
-        
-        print('{} Total buy and hold profit from {} to {} for {} shares = ${:.2f}'.format
-              (self.symbol, start_date.date(), end_date.date(), nshares, total_hold_profit))
-        
-        # Plot the total profits 
-        plt.style.use('dark_background')
-        
-        # Location for number of profit
-        text_location = (end_date - pd.DateOffset(months = 1)).date()
-        
-        # Plot the profits over time
-        plt.plot(profits['Date'], profits['hold_profit'], 'b', linewidth = 3)
-        plt.ylabel('Profit ($)'); plt.xlabel('Date'); plt.title('Buy and Hold Profits for {} {} to {}'.format(
-                                                                self.symbol, start_date.date(), end_date.date()))
-        
-        # Display final value on graph
-        plt.text(x = text_location, 
-             y =  total_hold_profit + (total_hold_profit / 40),
-             s = '$%d' % total_hold_profit,
-            color = 'g' if total_hold_profit > 0 else 'r',
-            size = 14)
-        
-        plt.grid(alpha=0.2)
-        plt.show();
+                    
+                # Drop the weekends
+                dataframe = dataframe.drop(weekends, axis=0)
+                    
+                return dataframe
+                
+                
+                # Calculate and plot profit from buying and holding shares for specified date range
+
         
     # Create a prophet model without training
         
